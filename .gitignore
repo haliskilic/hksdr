@@ -1,0 +1,32 @@
+# Yakalanan / üretilen IQ verisi (büyük, ikili, yeniden üretilebilir)
+*.complex
+*.bin
+*.iq
+*.wav
+*.raw
+captures/*
+!captures/.gitkeep
+
+# rtl_power / tarama çıktıları
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Web uygulaması veritabanı (historik loglar — yerel)
+*.db
+*.db-wal
+*.db-shm
+webapp/sdrscanner.db*
+
+# Ses kayıt arşivi (yerel, büyük)
+webapp/recordings/
+
+# Editör / sistem
+.vscode/
+.idea/
+*.swp
+.DS_Store

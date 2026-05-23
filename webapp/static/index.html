@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="title">📡 HK.SDR</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<header>
+  <button id="hamburger" aria-label="menu">☰</button>
+  <h1 data-i18n="title">📡 HK.SDR</h1>
+  <div id="status" class="status" data-i18n="status.connecting">connecting…</div>
+  <button id="langBtn" class="lang-btn">🇬🇧 EN</button>
+</header>
+
+<nav id="sidebar">
+  <div class="side-title" data-i18n="title">📡 HK.SDR</div>
+  <button id="navScan" data-i18n="nav.scan">🏠 Scan</button>
+  <div class="side-group" data-i18n="grp.decoders">Decoders</div>
+  <button id="adsbBtn" class="hidden" data-i18n="btn.adsb">✈️ ADS-B</button>
+  <button id="aisBtn" class="hidden" data-i18n="btn.ais">🚢 AIS ships</button>
+  <button id="aprsBtn" class="hidden" data-i18n="btn.aprs">📡 APRS</button>
+  <button id="acarsBtn" class="hidden" data-i18n="btn.acars">🛩️ ACARS</button>
+  <button id="vdl2Btn" class="hidden" data-i18n="btn.vdl2">🛰️ VDL2</button>
+  <button id="pagerBtn" class="hidden" data-i18n="btn.pager">📟 Pager</button>
+  <button id="rdsBtn" class="hidden" data-i18n="btn.rds">📻 RDS (FM)</button>
+  <button id="ismBtn" class="hidden" data-i18n="btn.ism">🌡️ ISM (433)</button>
+  <div class="side-group" data-i18n="grp.visual">Visual</div>
+  <button id="wfBtn" data-i18n="btn.wf">📊 Waterfall</button>
+  <div class="side-group" data-i18n="grp.recana">Record &amp; Analyze</div>
+  <button id="recBtn" data-i18n="btn.rec">🎙️ Recordings</button>
+  <button id="anaBtn" data-i18n="btn.ana">📈 Analytics</button>
+  <div class="side-group" data-i18n="grp.system">System</div>
+  <button id="cfgBtn" data-i18n="btn.cfg">⚙️ Settings</button>
+</nav>
+<div id="backdrop"></div>
+
+<section id="listenBar" class="listen-bar hidden">
+  <span class="dot"></span>
+  <span id="listenLabel" data-i18n="listen.label">Listening</span>
+  <audio id="player" autoplay></audio>
+  <label class="nr-tick"><input type="checkbox" id="nrChk"> <span data-i18n="listen.nr">🔇 Noise filter</span></label>
+  <span id="listenStt" class="listen-stt"><span class="stt-ico">🗣️</span><span id="listenSttText" class="stt-flow"></span></span>
+  <button id="stopBtn" data-i18n="listen.stop">⏹ Stop &amp; resume scan</button>
+</section>
+<div id="toasts" class="toasts"></div>
+
+<!-- ADS-B panel -->
+<section id="adsbPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot blue"></span>
+    <span id="adsbLabel" data-i18n="adsb.label">✈️ ADS-B mode — listening on 1090 MHz</span>
+  </div>
+  <div id="map"></div>
+  <table id="acTbl">
+    <thead><tr id="acHead"></tr></thead>
+    <tbody id="acRows"><tr><td class="empty" data-i18n="common.waiting">waiting…</td></tr></tbody>
+  </table>
+</section>
+
+<!-- ISM (433 MHz sensor) panel -->
+<section id="ismPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot green"></span>
+    <span id="ismLabel" data-i18n="ism.label">📟 ISM 433 MHz — sensor messages</span>
+  </div>
+  <table id="ismTbl">
+    <thead><tr><th data-i18n="ism.th.device">Device</th><th data-i18n="ism.th.last">Last reading / data</th><th data-i18n="ism.th.count">Count</th><th data-i18n="ism.th.seen">Seen</th></tr></thead>
+    <tbody id="ismRows"><tr><td colspan="4" class="empty" data-i18n="ism.empty">Waiting for sensor message… (wireless thermometer, TPMS, remote, etc. — intermittent)</td></tr></tbody>
+  </table>
+</section>
+
+<!-- Pager / ACARS (message list) panel -->
+<section id="msgPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot green"></span>
+    <span id="msgLabel" data-i18n="msg.label">Messages</span>
+    <label id="msgFreqWrap" class="wf-ctl hidden"><span data-i18n="msg.freq">Freq</span> <input id="msgFreq" type="number" value="466.025" step="0.025"> MHz</label>
+    <button id="msgApply" class="hidden" data-i18n="common.apply">Apply</button>
+  </div>
+  <table id="msgTbl">
+    <thead><tr><th data-i18n="msg.th.time">Time</th><th data-i18n="msg.th.source">Source</th><th data-i18n="msg.th.detail">Detail</th></tr></thead>
+    <tbody id="msgRows"><tr><td colspan="3" class="empty" data-i18n="msg.empty">Waiting for message…</td></tr></tbody>
+  </table>
+</section>
+
+<!-- Waterfall / spectrum panel -->
+<section id="wfPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot amber"></span>
+    <span data-i18n="wf.title">📊 Spectrum / Waterfall</span>
+    <span id="wfCursor" class="wf-cursor" data-i18n="wf.cursor">cursor: —</span>
+    <label class="wf-ctl"><span data-i18n="wf.center">Center</span> <input id="wfCenter" type="number" value="100" step="0.1"> MHz</label>
+    <label class="wf-ctl"><span data-i18n="wf.span">Span</span> <input id="wfSpan" type="number" value="2" step="0.5" min="0.2" max="2.4"> MHz</label>
+    <button id="wfApply" data-i18n="common.apply">Apply</button>
+  </div>
+  <canvas id="wfCanvas" width="256" height="140"></canvas>
+  <div id="wfAxis" class="wf-axis">—</div>
+  <div class="wf-hint" data-i18n-html="wf.hint">Top row = newest · color = power · <b>click → listen</b> · <b>Shift+click → classify 🔬</b> · wheel → zoom</div>
+</section>
+
+<!-- Analytics & search panel -->
+<section id="anaPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot"></span>
+    <span data-i18n="ana.title">📈 Analytics &amp; Search</span>
+    <select id="anaHours" class="wf-ctl">
+      <option value="1" data-i18n="ana.h1">last 1h</option><option value="6" data-i18n="ana.h6">last 6h</option>
+      <option value="24" selected data-i18n="ana.h24">last 24h</option><option value="168" data-i18n="ana.h7d">last 7d</option>
+    </select>
+    <button id="anaRefresh" data-i18n="common.refresh">Refresh</button>
+    <a class="dl-btn" href="/api/export?what=detections&fmt=csv" data-i18n="ana.exp.det">⬇ Detections CSV</a>
+    <a class="dl-btn" href="/api/export?what=messages&fmt=csv" data-i18n="ana.exp.msg">⬇ Messages CSV</a>
+    <button id="anaClose" data-i18n="common.close">⏹ Close</button>
+  </div>
+  <div class="ana-grid">
+    <div>
+      <h3 class="ana-h" data-i18n="ana.topfreq">Most active frequencies</h3>
+      <table id="anaTop"><thead><tr><th data-i18n="th.freq">Frequency</th><th data-i18n="th.category">Category</th><th data-i18n="ana.th.count">Count</th><th data-i18n="ana.th.avgpow">Avg power</th></tr></thead>
+        <tbody id="anaTopRows"><tr><td colspan="4" class="empty">…</td></tr></tbody></table>
+    </div>
+    <div>
+      <h3 class="ana-h" data-i18n="ana.catdist">Category distribution</h3><div id="anaCats" class="bars"></div>
+      <h3 class="ana-h" data-i18n="ana.hourly">Hourly activity (going back)</h3><div id="anaHourly" class="bars"></div>
+    </div>
+  </div>
+  <div class="ana-search">
+    <input id="anaSearch" type="text" data-i18n-ph="ana.search.ph" placeholder="🔍 search: category / band / frequency (e.g. TETRA, 385, FM)">
+    <table id="anaResTbl"><thead><tr><th data-i18n="th.time">Time</th><th data-i18n="th.freq">Frequency</th><th data-i18n="th.category">Category</th><th data-i18n="th.band">Band</th><th data-i18n="th.power">Power</th></tr></thead>
+      <tbody id="anaResRows"></tbody></table>
+  </div>
+</section>
+
+<!-- ⚙️ Settings panel -->
+<section id="cfgPanel" class="adsb hidden">
+  <div class="adsb-bar"><span class="dot"></span><span data-i18n="cfg.title">⚙️ Settings</span><button id="cfgClose" style="margin-left:auto" data-i18n="common.close">⏹ Close</button></div>
+  <div class="cfg-body">
+    <h3 class="ana-h" data-i18n="cfg.sched.h">⏱️ Schedule (hour → profile)</h3>
+    <textarea id="cfgSchedule" rows="2" placeholder='[{"from":18,"to":24,"profile":"..."}]'></textarea>
+    <button id="cfgSchedSave" data-i18n="cfg.sched.save">Save schedule</button>
+    <span class="muted" data-i18n="cfg.sched.hint">Empty = off. You can also pick a profile from the dropdown above.</span>
+
+    <h3 class="ana-h" data-i18n="cfg.gain.h">📶 Gain &amp; PPM calibration</h3>
+    <label class="wf-ctl"><span data-i18n="cfg.gain">Gain</span> <input id="cfgGain" type="number" step="1"></label>
+    <label class="wf-ctl">PPM <input id="cfgPpm" type="number" step="1"></label>
+    <button id="cfgApply" data-i18n="common.apply">Apply</button>
+    <button id="cfgMeasure" data-i18n="cfg.measure">Measure PPM (~35 s)</button>
+    <span id="cfgPpmStat" class="muted"></span>
+
+    <h3 class="ana-h" data-i18n="cfg.bm.h">⭐ Bookmarks — import CSV (freq_mhz,label,demod,category)</h3>
+    <input id="cfgCsv" type="file" accept=".csv,text/csv">
+    <button id="cfgImport" data-i18n="cfg.import">Import</button>
+    <span id="cfgImpStat" class="muted"></span>
+    <table id="bmTbl">
+      <thead><tr><th data-i18n="th.freq">Frequency</th><th data-i18n="bm.th.label">Label</th><th data-i18n="bm.th.mod">Mode</th><th data-i18n="bm.th.action">Action</th></tr></thead>
+      <tbody id="bmRows"><tr><td colspan="4" class="empty" data-i18n="bm.empty">No bookmarks — import a CSV or add manually.</td></tr></tbody>
+    </table>
+
+    <h3 class="ana-h" data-i18n="cfg.access.h">📲 Access &amp; PWA</h3>
+    <div class="muted" data-i18n-html="cfg.access.body">From your phone: start with <code>HOST=0.0.0.0 scripts/run_webapp.sh</code>, then on the same network open
+      <code>http://&lt;computer-IP&gt;:8000</code>. For security use <code>AUTH=user:pass</code>.
+      In the browser use <b>"Add to Home Screen"</b> to install it like an app (PWA).</div>
+  </div>
+</section>
+
+<!-- Audio recordings archive panel -->
+<section id="recPanel" class="adsb hidden">
+  <div class="adsb-bar">
+    <span class="dot"></span>
+    <span data-i18n="rec.title">🎙️ Audio Recordings — frequencies you listen to are archived automatically</span>
+    <button id="recRefresh" data-i18n="common.refresh">Refresh</button>
+    <button id="recClose" data-i18n="common.close">⏹ Close</button>
+  </div>
+  <table id="recTbl">
+    <thead><tr><th data-i18n="rec.th.time">Time</th><th data-i18n="th.freq">Frequency</th><th data-i18n="rec.th.mod">Mode</th><th data-i18n="rec.th.size">Size</th><th data-i18n="rec.th.play">Play / Delete</th></tr></thead>
+    <tbody id="recRows"><tr><td colspan="5" class="empty">…</td></tr></tbody>
+  </table>
+</section>
+
+<!-- Scan view -->
+<section id="filters" class="filters">
+  <span class="filters-title" data-i18n="flt.profile">Profile:</span>
+  <select id="profSel" class="wf-ctl"></select>
+  <span class="filters-title" data-i18n="flt.categories">&nbsp;Categories:</span>
+  <div id="chips" class="chips"></div>
+  <span id="sttCatTitle" class="filters-title hidden">·&nbsp; 🗣️ STT:</span>
+  <div id="sttCats" class="chips"></div>
+  <span id="sttLangTitle" class="filters-title hidden" data-i18n="flt.lang">&nbsp;| Lang:</span>
+  <div id="sttLangs" class="chips"></div>
+  <span class="filters-title" data-i18n="flt.view">&nbsp;| 🔀 View:</span>
+  <button id="groupBtn" data-i18n="group.off">Group: off</button>
+  <span class="filters-title" data-i18n="flt.alarm">&nbsp;| 🔔 Alarm:</span>
+  <input id="alertWords" class="alert-input" type="text" data-i18n-ph="flt.alarm.ph" placeholder="word/category/frequency, comma-separated">
+  <button id="alertBtn" data-i18n="alert.off">off</button>
+</section>
+
+<main id="scanMain">
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th data-i18n="th.time">Time</th><th data-i18n="th.freq">Frequency</th><th data-i18n="th.category">Category</th><th data-i18n="th.band">Band</th>
+        <th data-i18n="th.power">Power</th><th data-i18n="th.width">Width</th><th data-i18n="th.audio">Audio</th><th data-i18n="th.stt">Text (STT)</th>
+      </tr>
+    </thead>
+    <tbody id="rows"><tr><td colspan="8" class="empty" data-i18n="scan.empty">No data yet — scan starting…</td></tr></tbody>
+  </table>
+</main>
+
+<footer data-i18n="footer">Newest on top · ▶ live-listen audio-capable channels · ✈️ track aircraft on the map with ADS-B · scanning pauses during listen/ADS-B</footer>
+<script src="/app.js"></script>
+</body>
+</html>
