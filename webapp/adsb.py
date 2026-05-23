@@ -55,6 +55,7 @@ class AdsbTracker:
                 self.device.mode = "scan"
                 return False
             self.device.proc = proc
+            self._proc = proc
         with self.lock:
             self.aircraft.clear()
         self.running = True
@@ -65,8 +66,10 @@ class AdsbTracker:
     def stop(self):
         self.running = False
         with self.device.lock:
-            self.device._kill_locked()
-            self.device.mode = "scan"
+            if self.device.proc is getattr(self, "_proc", None):   # yalnız kendi sürecimizse
+                self.device._kill_locked()
+            if self.device.mode == "adsb":                         # yalnız hâlâ bizim modumuzsa
+                self.device.mode = "scan"
         with self.lock:
             self.aircraft.clear()
 

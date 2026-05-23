@@ -48,6 +48,7 @@ class Waterfall:
                 self.device.mode = "scan"
                 return False
             self.device.proc = proc
+            self._proc = proc
         self.center, self.span, self.csv = center, span, csv
         with self.lock:
             self.freqs = []
@@ -60,8 +61,10 @@ class Waterfall:
     def stop(self):
         self.running = False
         with self.device.lock:
-            self.device._kill_locked()
-            self.device.mode = "scan"
+            if self.device.proc is getattr(self, "_proc", None):
+                self.device._kill_locked()
+            if self.device.mode == "wf":
+                self.device.mode = "scan"
         if self.csv and os.path.exists(self.csv):
             try:
                 os.remove(self.csv)

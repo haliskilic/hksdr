@@ -41,6 +41,8 @@ const I18N = {
     "flt.alarm": "| 🔔 Alarm:", "flt.alarm.ph": "word/category/frequency, comma-separated",
     "group.off": "Group: off", "group.on": "Group: on 🔀", "alert.off": "off", "alert.on": "on 🔔",
     "scan.empty": "No data yet — scan starting…", "scan.none": "No records yet…",
+    "row.listen": "▶ Listen", "row.digital": "digital", "wf.waiting": "waiting for spectrum…",
+    "flt.profile.set": "Profile: {name}",
     "footer": "Newest on top · ▶ live-listen audio-capable channels · ✈️ track aircraft on the map with ADS-B · scanning pauses during listen/ADS-B",
     "status.noserver": "cannot reach server",
     "st.adsb": "✈️ <b>ADS-B</b> · aircraft: <b>{n}</b>", "st.ais": "🚢 <b>AIS</b> · ships on map",
@@ -111,6 +113,8 @@ const I18N = {
     "flt.alarm": "| 🔔 Alarm:", "flt.alarm.ph": "kelime/kategori/frekans, virgülle",
     "group.off": "Grupla: kapalı", "group.on": "Grupla: açık 🔀", "alert.off": "kapalı", "alert.on": "açık 🔔",
     "scan.empty": "Henüz veri yok — tarama başlıyor…", "scan.none": "Kayıt yok…",
+    "row.listen": "▶ Dinle", "row.digital": "dijital", "wf.waiting": "spektrum bekleniyor…",
+    "flt.profile.set": "Profil: {name}",
     "footer": "En güncel üstte · ses-uygun kanallarda ▶ canlı dinle · ✈️ ADS-B ile uçakları haritada izle · dinleme/ADS-B sırasında tarama durur",
     "status.noserver": "sunucuya bağlanılamıyor",
     "st.adsb": "✈️ <b>ADS-B</b> · uçak: <b>{n}</b>", "st.ais": "🚢 <b>AIS</b> · gemiler haritada",
@@ -144,6 +148,7 @@ const I18N = {
   },
 };
 let lang = localStorage.getItem("sdrLang") || "en";
+const DLOC = lang === "tr" ? "tr-TR" : "en-GB";   // tarih/saat yeresi (dile göre)
 function t(k, v) {
   let s = (I18N[lang] && k in I18N[lang]) ? I18N[lang][k] : (k in I18N.en ? I18N.en[k] : k);
   if (v) s = s.replace(/\{(\w+)\}/g, (_, n) => (v[n] != null ? v[n] : ""));
@@ -252,7 +257,7 @@ async function init() {
   $("cfgImport").addEventListener("click", importCsv);
   $("profSel").addEventListener("change", () => {
     fetch(`/api/profile?set=${encodeURIComponent($("profSel").value)}`, { method: "POST" });
-    toast(`Profil: ${$("profSel").value}`);
+    toast(t("flt.profile.set", { name: $("profSel").value }));
   });
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
   $("alertBtn").addEventListener("click", toggleAlerts);
@@ -422,11 +427,12 @@ function render(rows) {
 }
 
 function rowHtml(r) {
-  const t = new Date(r.ts * 1000).toLocaleTimeString("tr-TR");
+  const t = new Date(r.ts * 1000).toLocaleTimeString(DLOC);
   const color = COLORS[r.category] || "#64748b";
+  const dm = (r.demod || "").replace(/[^a-z]/gi, "").toLowerCase();   // onclick JS-string güvenliği
   const listen = r.audio
-    ? `<button class="listen-btn" onclick="listen(${r.freq_mhz},'${r.demod}')">▶ Dinle</button>`
-    : `<span class="muted">dijital</span>`;
+    ? `<button class="listen-btn" onclick="listen(${Number(r.freq_mhz)},'${dm}')">${t("row.listen")}</button>`
+    : `<span class="muted">${t("row.digital")}</span>`;
   // STT sütunu: yalnızca dinlenebilir (ses) frekanslar için cümle (+ dil etiketi)
   const langTag = r.stt_lang ? `<span class="stt-lang">${esc(r.stt_lang.toUpperCase())}</span> ` : "";
   const stt = r.audio
@@ -693,7 +699,7 @@ async function pollMsg() {
   const tb = $("msgRows");
   if (!m.length) { tb.innerHTML = `<tr><td colspan="3" class="empty">${MSG_CFG[msgMode].empty}</td></tr>`; return; }
   tb.innerHTML = m.map((x) => `<tr>
-    <td>${new Date(x.ts * 1000).toLocaleTimeString("tr-TR")}</td>
+    <td>${new Date(x.ts * 1000).toLocaleTimeString(DLOC)}</td>
     <td><b>${esc(x.label)}</b></td><td>${esc(x.detail)}</td></tr>`).join("");
 }
 
@@ -721,7 +727,7 @@ async function pollWaterfall() {
   const ctx = cv.getContext("2d");
   const h = cv.height;
   const rows = d.rows || [];
-  if (!rows.length) { ctx.clearRect(0, 0, cv.width, h); $("wfAxis").textContent = "spektrum bekleniyor…"; return; }
+  if (!rows.length) { ctx.clearRect(0, 0, cv.width, h); $("wfAxis").textContent = t("wf.waiting"); return; }
   let mn = Infinity, mx = -Infinity;
   for (const r of rows) for (const v of r) { if (v < mn) mn = v; if (v > mx) mx = v; }
   const rng = Math.max(1, mx - mn);
@@ -807,7 +813,7 @@ async function loadRec() {
     return;
   }
   tb.innerHTML = recs.map((r) => `<tr>
-    <td>${new Date(r.ts * 1000).toLocaleString("tr-TR")}</td>
+    <td>${new Date(r.ts * 1000).toLocaleString(DLOC)}</td>
     <td class="freq">${r.freq} MHz</td>
     <td>${(r.demod || "").toUpperCase()}</td>
     <td>${(r.size / 1024).toFixed(0)} KB</td>
@@ -946,7 +952,7 @@ async function searchAna() {
   let rows;
   try { rows = await (await fetch(`/api/search?q=${encodeURIComponent(q)}`)).json(); } catch (e) { return; }
   $("anaResRows").innerHTML = rows.length
-    ? rows.map((r) => `<tr><td>${new Date(r.ts * 1000).toLocaleTimeString("tr-TR")}</td>
+    ? rows.map((r) => `<tr><td>${new Date(r.ts * 1000).toLocaleTimeString(DLOC)}</td>
         <td class="freq">${r.freq_mhz.toFixed(4)}</td><td>${esc(r.category)}</td><td>${esc(r.band)}</td><td>${r.power} dB</td></tr>`).join("")
     : `<tr><td colspan="5" class="empty">${t("ana.nomatch")}</td></tr>`;
 }
@@ -1008,9 +1014,9 @@ async function loadBookmarks() {
     const dm = (b.demod || "").replace(/[^a-z]/gi, "").toLowerCase();   // onclick JS-string injection'a karşı whitelist
     return `<tr>
     <td class="freq">${Number(b.freq_mhz).toFixed(4)} MHz</td><td>${esc(b.label)}</td><td>${esc(dm.toUpperCase())}</td>
-    <td><button class="listen-btn" onclick="bmListen(${Number(b.freq_mhz)},'${dm}')">▶ Dinle</button>
+    <td><button class="listen-btn" onclick="bmListen(${Number(b.freq_mhz)},'${dm}')">${t("row.listen")}</button>
         <button class="listen-btn" onclick="bmDel(${Number(b.id)})">🗑️</button></td></tr>`; }).join("")
-    : `<tr><td colspan="4" class="empty">Yer imi yok</td></tr>`;
+    : `<tr><td colspan="4" class="empty">${t("bm.empty")}</td></tr>`;
 }
 window.bmListen = function (f, d) { closeCfg(); window.listen(f, d || "wbfm"); };
 window.bmDel = async function (id) {

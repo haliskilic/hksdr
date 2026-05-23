@@ -84,7 +84,7 @@ class DB:
                 "DELETE FROM detections WHERE id < "
                 "(SELECT COALESCE(MAX(id),0)-? FROM detections)", (self.KEEP,))
             self.conn.commit()
-            self._det_count = min(self._det_count + len(sigs), self.KEEP)   # cached count
+            self._det_count = min(self._det_count + len(sigs), self.KEEP + 1)   # cached count (prune KEEP+1 satır bırakır)
 
     def recent(self, limit=300, categories=None):
         with self.lock:

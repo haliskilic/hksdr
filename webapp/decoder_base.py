@@ -65,6 +65,7 @@ class PipeDecoder:
         with self.device.lock:
             self.device.mode = self.MODE
             self.device._kill_locked()
+            fm = None
             try:
                 fm = subprocess.Popen(
                     [shutil.which("rtl_fm"), "-f", self.freq, *self.rtl_fm_args(),
@@ -73,7 +74,12 @@ class PipeDecoder:
                 dn = subprocess.Popen(
                     self.downstream_cmd(), stdin=fm.stdout, stdout=subprocess.PIPE,
                     stderr=subprocess.DEVNULL, text=True, bufsize=1)
-            except FileNotFoundError:
+            except OSError:                   # downstream başlamadıysa fm'i sızdırma
+                if fm and fm.poll() is None:
+                    try:
+                        fm.kill()
+                    except Exception:
+                        pass
                 self.device.mode = "scan"
                 return False
             fm.stdout.close()                 # downstream ölünce fm SIGPIPE alsın

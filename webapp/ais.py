@@ -90,6 +90,7 @@ class AisTracker:
                 s.close()
                 return False
             self.device.proc = proc
+            self._proc = proc
         self._sock = s
         with self.lock:
             self.ships.clear()
@@ -109,8 +110,10 @@ class AisTracker:
                 pass
             self._sock = None
         with self.device.lock:
-            self.device._kill_locked()
-            self.device.mode = "scan"
+            if self.device.proc is getattr(self, "_proc", None):
+                self.device._kill_locked()
+            if self.device.mode == "ais":
+                self.device.mode = "scan"
 
     def _read_loop(self):
         while self.running and self._sock:

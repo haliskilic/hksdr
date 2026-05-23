@@ -58,6 +58,7 @@ class AcarsDecoder:
                 s.close()
                 return False
             self.device.proc = proc
+            self._proc = proc
         self._sock = s
         self.running = True
         self._reader = threading.Thread(target=self._read_loop, daemon=True)
@@ -73,8 +74,10 @@ class AcarsDecoder:
                 pass
             self._sock = None
         with self.device.lock:
-            self.device._kill_locked()
-            self.device.mode = "scan"
+            if self.device.proc is getattr(self, "_proc", None):
+                self.device._kill_locked()
+            if self.device.mode == "acars":
+                self.device.mode = "scan"
 
     def _read_loop(self):
         while self.running and self._sock:
@@ -99,7 +102,7 @@ class AcarsDecoder:
         label = (o.get("label") or "").strip()
         text = (o.get("text") or "").replace("\r", " ").replace("\n", " ").strip()
         who = flight or reg or "?"
-        detail = (f"{reg} · " if reg and flight else "") + f"[{label}] " + (text[:130] if text else "(veri)")
+        detail = (f"{reg} · " if reg and flight else "") + (f"[{label}] " if label else "") + (text[:130] if text else "(veri)")
         if self.db:
             self.db.insert_message("acars", who, detail)
 

@@ -144,6 +144,7 @@ def run_stt_pass():
         for k in [k for k, e in AUDIO_REG.items()
                   if now - e.get("last_seen", 0) > AUDIO_REG_MAX_AGE]:
             del AUDIO_REG[k]
+            STT_TEXT.pop(k, None)          # eskiyen frekansın transkripti de düşsün (sızıntı önle)
         cats = set(STT_CATS)
         langs = sorted(STT_LANGS)
         items = [(k, dict(e)) for k, e in AUDIO_REG.items()
@@ -245,8 +246,11 @@ def _start_decoder(mode, qs):
     """Mod-özgü argümanları çözüp start_mode ile başlat (wf: merkez/genişlik; pager/rds: freq)."""
     dec = MODE_DEC[mode]
     if mode == "wf":
-        c = float(qs.get("center", ["100"])[0]) * 1e6
-        s = float(qs.get("span", ["2"])[0]) * 1e6
+        try:
+            c = float(qs.get("center", ["100"])[0]) * 1e6
+            s = float(qs.get("span", ["2"])[0]) * 1e6
+        except (ValueError, TypeError):       # bozuk param → varsayılan (500 atma)
+            c, s = 100e6, 2e6
         return start_mode("wf", lambda: dec.start(c, s))
     if mode in ("pager", "rds"):
         return start_mode(mode, lambda: dec.start(qs.get("freq", [""])[0] or None))

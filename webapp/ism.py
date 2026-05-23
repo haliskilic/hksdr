@@ -53,6 +53,7 @@ class IsmDecoder:
                 self.device.mode = "scan"
                 return False
             self.device.proc = proc
+            self._proc = proc
         with self.lock:
             self.devices = {}        # her başlangıçta canlı tabloyu sıfırla
         self.running = True
@@ -63,8 +64,10 @@ class IsmDecoder:
     def stop(self):
         self.running = False
         with self.device.lock:
-            self.device._kill_locked()
-            self.device.mode = "scan"
+            if self.device.proc is getattr(self, "_proc", None):
+                self.device._kill_locked()
+            if self.device.mode == "ism":
+                self.device.mode = "scan"
 
     def _read_loop(self, proc):
         try:
