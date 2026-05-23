@@ -427,7 +427,7 @@ function render(rows) {
 }
 
 function rowHtml(r) {
-  const t = new Date(r.ts * 1000).toLocaleTimeString(DLOC);
+  const tm = new Date(r.ts * 1000).toLocaleTimeString(DLOC);   // yerel ad 't' DEĞİL — global t() çeviri fonksiyonunu gölgelemesin
   const color = COLORS[r.category] || "#64748b";
   const dm = (r.demod || "").replace(/[^a-z]/gi, "").toLowerCase();   // onclick JS-string güvenliği
   const listen = r.audio
@@ -439,7 +439,7 @@ function rowHtml(r) {
     ? (r.stt ? `${langTag}<span class="stt-text">${esc(r.stt)}</span>` : `<span class="muted">…</span>`)
     : `<span class="muted">—</span>`;
   const cnt = r.count ? ` <span class="cnt">×${r.count}</span>` : "";   // 1B: gruplu tekrar sayısı
-  return `<tr data-ts="${r.ts}"><td>${t}</td>
+  return `<tr data-ts="${r.ts}"><td>${tm}</td>
     <td class="freq">${r.freq_mhz.toFixed(r.count ? 3 : 4)} MHz${cnt}</td>
     <td><span class="badge" style="background:${color}">${esc(r.category)}</span></td>
     <td>${esc(r.band)}</td><td>${r.power} dB</td><td>${r.bw_khz} kHz</td>
