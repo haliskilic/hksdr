@@ -163,6 +163,8 @@ Telif © 2026 Halis KILIÇ.
 
 HK.SDR işine yarıyorsa **[GitHub Sponsors üzerinden destek olmayı ❤️](https://github.com/sponsors/haliskilic)** düşünebilirsin — sponsorluklar test donanımını ve projenin bakımına ayrılan zamanı karşılıyor.
 
+GitHub hesabın yoksa **[bir kahve ısmarlayabilirsin ☕](https://buymeacoffee.com/haliskilic)**.
+
 ---
 
 <div align="center">
