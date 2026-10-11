@@ -8,6 +8,7 @@
 
 [![Lisans: AGPL-3.0](https://img.shields.io/badge/Lisans-AGPL--3.0-blue.svg)](LICENSE)
 [![Ticari lisans](https://img.shields.io/badge/Ticari-lisans%20mevcut-green.svg)](COMMERCIAL_LICENSE.md)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/haliskilic)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg)](https://www.python.org/)
 [![Backend: sadece stdlib](https://img.shields.io/badge/backend-saf%20stdlib-success.svg)]()
 [![Yalnızca RX](https://img.shields.io/badge/RX--only-yaln%C4%B1zca%20al%C4%B1c%C4%B1-orange.svg)]()
@@ -149,15 +150,18 @@ HK.SDR **yalnızca alıcıdır (RX-only)** ve **eğitim ile açık sinyallerin y
 
 ## 📄 Lisans
 
-HK.SDR, **GNU Affero General Public License v3.0 (AGPL-3.0)** ile lisanslıdır —
-bkz. [`LICENSE`](LICENSE). Özetle: özgürce kullanabilir, inceleyebilir, değiştirebilir ve
-kendin barındırabilirsin; ancak değiştirilmiş bir sürümü ağ servisi olarak çalıştırırsan
-kaynağını aynı lisansla kullanıcılarına açmalısın.
+HK.SDR **çift lisanslıdır**:
 
-AGPL-3.0 ile uyumsuz kullanım için (örn. kapalı kaynak / ticari ürünler) ayrı bir
-**ticari lisans** mevcuttur — bkz. [`COMMERCIAL_LICENSE.md`](COMMERCIAL_LICENSE.md).
+- **Açık kaynak — [GNU AGPL-3.0](LICENSE):** kullanmak, incelemek, değiştirmek ve paylaşmak serbesttir. Dağıtırsan ya da değiştirilmiş bir sürümü ağ servisi olarak çalıştırırsan, tüm kaynak kodunu AGPL-3.0 ile sunman gerekir.
+- **Ticari lisans:** AGPL-3.0 yükümlülükleri olmadan kapalı kaynak ürün, cihaz ya da SaaS için — bkz. [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) veya **mail@haliskilic.com.tr**.
 
-**Telif © 2026 Halis KILIÇ.** Tüm hakları saklıdır.
+Katkılar memnuniyetle karşılanır! İlk pull request'inde tek seferlik bir [Katkıcı Lisans Sözleşmesi (CLA)](https://gist.github.com/haliskilic/7a7fdcd355f54d1db6943959d7b76823) imzalaman istenir; katkının telif hakkı sende kalır.
+
+Telif © 2026 Halis KILIÇ.
+
+## ❤️ Projeyi destekle
+
+HK.SDR işine yarıyorsa **[GitHub Sponsors üzerinden destek olmayı ❤️](https://github.com/sponsors/haliskilic)** düşünebilirsin — sponsorluklar test donanımını ve projenin bakımına ayrılan zamanı karşılıyor.
 
 ---
 

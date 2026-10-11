@@ -6,7 +6,7 @@
 
 ### Reporting a vulnerability
 Please report security issues **privately** by email to **Halis KILIÇ**
-<haliskilic90@gmail.com> rather than opening a public issue. Include reproduction steps and
+<mail@haliskilic.com.tr> rather than opening a public issue. Include reproduction steps and
 affected version/commit. You will receive an acknowledgement and a fix timeline.
 
 ### Scope & hardening notes
@@ -23,7 +23,7 @@ affected version/commit. You will receive an acknowledgement and a fix timeline.
 
 ### Güvenlik açığı bildirimi
 Lütfen güvenlik sorunlarını herkese açık issue açmak yerine **gizli olarak** e-posta ile bildir:
-**Halis KILIÇ** <haliskilic90@gmail.com>. Yeniden üretme adımlarını ve etkilenen sürüm/commit'i
+**Halis KILIÇ** <mail@haliskilic.com.tr>. Yeniden üretme adımlarını ve etkilenen sürüm/commit'i
 ekle. Bir onay ve düzeltme zaman çizelgesi alırsın.
 
 ### Kapsam & sertleştirme notları

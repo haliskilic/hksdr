@@ -8,6 +8,7 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Commercial license](https://img.shields.io/badge/Commercial-license%20available-green.svg)](COMMERCIAL_LICENSE.md)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/haliskilic)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg)](https://www.python.org/)
 [![Backend: stdlib only](https://img.shields.io/badge/backend-pure%20stdlib-success.svg)]()
 [![RX only](https://img.shields.io/badge/RX--only-receive%20only-orange.svg)]()
@@ -151,15 +152,18 @@ You are responsible for complying with the radio/privacy laws of your country.
 
 ## 📄 License
 
-HK.SDR is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)** — see
-[`LICENSE`](LICENSE). In short: you may use, study, modify and self-host it freely, but if you
-run a modified version as a network service you must make your complete source available to its
-users under the same license.
+HK.SDR is **dual-licensed**:
 
-For use that is incompatible with the AGPL-3.0 (e.g. closed-source / commercial products),
-a separate **commercial license** is available — see [`COMMERCIAL_LICENSE.md`](COMMERCIAL_LICENSE.md).
+- **Open source — [GNU AGPL-3.0](LICENSE):** free to use, study, modify and share. If you distribute it, or run a modified version as a network service, you must make your complete source code available under the AGPL-3.0.
+- **Commercial license:** for closed-source products, devices or SaaS without the AGPL-3.0 obligations — see [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) or email **mail@haliskilic.com.tr**.
 
-**Copyright © 2026 Halis KILIÇ.** All rights reserved.
+Contributions are welcome! On your first pull request you'll be asked to sign a one-time [Contributor License Agreement](https://gist.github.com/haliskilic/7a7fdcd355f54d1db6943959d7b76823); you keep the copyright to your work.
+
+Copyright © 2026 Halis KILIÇ.
+
+## ❤️ Support the project
+
+If HK.SDR is useful to you, please consider **[sponsoring my work on GitHub Sponsors ❤️](https://github.com/sponsors/haliskilic)** — sponsorships pay for test hardware and the time to keep the project maintained.
 
 ---
 

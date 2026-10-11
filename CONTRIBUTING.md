@@ -30,12 +30,10 @@ relevant logs (`/tmp` webapp log). For security issues see [SECURITY.md](SECURIT
 
 ### Licensing of contributions (important)
 HK.SDR is dual-licensed (AGPL-3.0 + commercial — see [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)).
-By submitting a contribution you agree that:
-1. your contribution is licensed under the **AGPL-3.0**, and
-2. you grant the project maintainer (**Halis KILIÇ**) the right to also distribute your
-   contribution under the **commercial license** (so the project can remain dual-licensed).
-
-If you cannot agree to this, please note it in your pull request so it can be handled separately.
+On your first pull request, the **CLA assistant** bot will ask you to sign the one-time
+[Contributor License Agreement](https://gist.github.com/haliskilic/7a7fdcd355f54d1db6943959d7b76823). You keep the copyright to your contribution;
+the CLA lets the maintainer (**Halis KILIÇ**) include it in both the AGPL-3.0 and the commercial
+editions. Pull requests can only be merged after the CLA is signed.
 
 ---
 
@@ -65,9 +63,7 @@ Bir issue aç: ne yaptın, ne bekledin, ne oldu, işletim sistemin, dongle model
 
 ### Katkıların lisansı (önemli)
 HK.SDR çift lisanslıdır (AGPL-3.0 + ticari — bkz. [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)).
-Bir katkı göndererek şunları kabul edersin:
-1. katkın **AGPL-3.0** ile lisanslıdır, ve
-2. proje sahibine (**Halis KILIÇ**) katkını **ticari lisans** altında da dağıtma hakkını verirsin
-   (böylece proje çift-lisanslı kalabilir).
-
-Bunu kabul edemiyorsan, ayrı değerlendirilebilmesi için pull request'inde belirt.
+İlk pull request'inde **CLA assistant** botu senden tek seferlik
+[Katkıcı Lisans Sözleşmesi'ni (CLA)](https://gist.github.com/haliskilic/7a7fdcd355f54d1db6943959d7b76823) imzalamanı ister. Katkının telif hakkı sende kalır;
+CLA, proje sahibinin (**Halis KILIÇ**) katkını hem AGPL-3.0 hem de ticari sürümde kullanabilmesini
+sağlar. CLA imzalanmadan pull request birleştirilemez.
